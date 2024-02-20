@@ -10,6 +10,12 @@ export default {
         'wr-grey-600': '#1B1D1F',
         'wr-blue-200': '#4E80EE',
       },
+      fontSize: {
+        xxs: '10px',
+      },
+      fontFamily: {
+        'vietnam-pro': ['Be Vietnam Pro', 'sans-serif'],
+      },
     },
   },
   plugins: [],

@@ -12,5 +12,5 @@ import { RouterView } from 'vue-router'
     />
   </div>
 
-  <RouterView class="absolute top-56 left-1/2 -translate-x-1/2" />
+  <RouterView class="absolute top-56 left-1/2 -translate-x-1/2 font-vietnam-pro" />
 </template>

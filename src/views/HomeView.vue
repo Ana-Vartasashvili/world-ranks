@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Filterbar from '../components/home/Filterbar.vue'
+</script>
 
 <template>
   <main class="bg-wr-grey-600 p-7 rounded-lg w-11/12 border border-wr-grey-300 border-opacity-35">
@@ -16,5 +18,7 @@
         />
       </div>
     </div>
+
+    <Filterbar />
   </main>
 </template>
