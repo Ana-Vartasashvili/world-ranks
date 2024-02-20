@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
-
-interface Region {
-  value: string
-  isSelected: boolean
-}
+import type { Region } from 'src/models/filterbar'
 
 const regions = reactive([
   { value: 'Americas', isSelected: false },
@@ -36,7 +32,7 @@ const toggleRegion = (toggledRegion: Region, index: number) => {
       <select
         name="sortBy"
         id="sortBy"
-        class="text-xs bg-wr-grey-600 border border-wr-grey-300 border-opacity-65 rounded-md py-2 px-3 w-52 focus:outline-none"
+        class="text-xs bg-wr-grey-600 cursor-pointer border border-wr-grey-300 border-opacity-65 rounded-md py-2 px-3 w-52 focus:outline-none"
       >
         <option value="alphabetical">Alphabetical</option>
         <option value="population" selected>Population</option>
