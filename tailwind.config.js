@@ -16,6 +16,9 @@ export default {
       fontFamily: {
         'vietnam-pro': ['Be Vietnam Pro', 'sans-serif'],
       },
+      maxWidth: {
+        300: '1200px',
+      },
     },
   },
   plugins: [],
