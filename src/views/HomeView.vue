@@ -1,17 +1,26 @@
 <script setup lang="ts">
 import CountriesList from '@/components/home/CountriesList.vue'
+import Filterbar from '@/components/home/Filterbar.vue'
+import Pagination from '@/components/home/Pagination.vue'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
-import Filterbar from '../components/home/Filterbar.vue'
-
-const countriesFields = ['flags', 'name', 'population', 'area', 'region']
+import { computed, onMounted, ref } from 'vue'
 
 const store = useCountriesStore()
-const { countries, error, isLoading } = storeToRefs(store)
+const { countries, isLoading } = storeToRefs(store)
+
+const countriesFields = ['flags', 'name', 'population', 'area', 'region']
+const currentPage = ref(1)
+const pageSize = ref(10)
 
 onMounted(() => {
   store.fetchCountries(countriesFields)
+})
+
+const paginatedCountries = computed(() => {
+  const startIndex = (currentPage.value - 1) * pageSize.value
+  const endIndex = startIndex + pageSize.value
+  return countries.value.slice(startIndex, endIndex)
 })
 </script>
 
@@ -36,7 +45,13 @@ onMounted(() => {
 
     <div class="flex gap-8 mt-7">
       <Filterbar />
-      <CountriesList :countries="countries" :is-loading="isLoading" />
+      <CountriesList :countries="paginatedCountries" :is-loading="isLoading" />
     </div>
+
+    <Pagination
+      v-model:currentPage="currentPage"
+      :page-size="pageSize"
+      :total-items="countries.length"
+    />
   </main>
 </template>

@@ -42,7 +42,8 @@ const addCommas = (item: number): string => {
               :src="country?.flags?.png"
               :alt="country.name.common + ' flag'"
               width="40"
-              class="rounded-sm"
+              height="20"
+              class="rounded-sm w-11 h-7"
             />
           </td>
           <td class="py-3 pr-3">{{ country.name.common }}</td>
@@ -54,6 +55,8 @@ const addCommas = (item: number): string => {
         <template v-if="props.isLoading">
           <CountriesListItemPlaceholder v-for="item in 10" />
         </template>
+
+        <div v-if="!isLoading && countries.length === 0" class="mt-2">No countries found</div>
       </tbody>
     </table>
   </div>

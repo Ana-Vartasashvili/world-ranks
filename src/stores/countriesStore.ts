@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import { getAllCountriesWithFilteredFields } from '../services/countriesRequests'
 import type { Country } from '@/models/countries'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 export const useCountriesStore = defineStore('countries', () => {
   const countries: Ref<Country[]> = ref([])
@@ -15,7 +17,9 @@ export const useCountriesStore = defineStore('countries', () => {
       const response = await getAllCountriesWithFilteredFields(fields)
       countries.value = response.data
     } catch (error: any) {
-      error.value = error?.message
+      toast(error?.response?.data?.message, {
+        theme: 'dark',
+      })
     } finally {
       isLoading.value = false
     }
