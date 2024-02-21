@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { Country } from '@/models/countries'
 import CountriesListItemPlaceholder from './CountriesListItemPlaceholder.vue'
+
+const props = defineProps<{ countries: Country[]; isLoading: boolean }>()
 </script>
 
 <template>
@@ -16,22 +19,24 @@ import CountriesListItemPlaceholder from './CountriesListItemPlaceholder.vue'
       </thead>
 
       <tbody>
-        <tr>
+        <tr v-for="country in props.countries" :key="country.name.official">
           <td class="py-3 pr-3">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Flag_of_Georgia.svg/1200px-Flag_of_Georgia.svg.png"
-              alt="flag"
+              :src="country?.flags?.png"
+              :alt="country.name.common + ' flag'"
               width="40"
               class="rounded-sm"
             />
           </td>
-          <td class="py-3 pr-3">Georgia</td>
-          <td class="py-3 pr-3">3,000,343</td>
-          <td class="py-3 pr-3">3,234,343</td>
-          <td class="py-3 pr-3">Europe</td>
+          <td class="py-3 pr-3">{{ country.name.common }}</td>
+          <td class="py-3 pr-3">{{ country.population }}</td>
+          <td class="py-3 pr-3">{{ country.area }}</td>
+          <td class="py-3 pr-3">{{ country.region }}</td>
         </tr>
 
-        <CountriesListItemPlaceholder v-for="item in 10" />
+        <template v-if="props.isLoading">
+          <CountriesListItemPlaceholder v-for="item in 10" />
+        </template>
       </tbody>
     </table>
   </div>

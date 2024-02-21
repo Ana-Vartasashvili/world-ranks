@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import Filterbar from '../components/home/Filterbar.vue'
 import CountriesList from '@/components/home/CountriesList.vue'
+import { useCountriesStore } from '@/stores/countriesStore'
+import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
+
+const countriesFields = ['flags', 'name', 'population', 'area', 'region']
+
+const store = useCountriesStore()
+const { countries, error, isLoading } = storeToRefs(store)
+
+onMounted(() => {
+  store.fetchCountries(countriesFields)
+})
 </script>
 
 <template>
@@ -24,7 +36,7 @@ import CountriesList from '@/components/home/CountriesList.vue'
 
     <div class="flex gap-8 mt-7">
       <Filterbar />
-      <CountriesList />
+      <CountriesList :countries="countries" :is-loading="isLoading" />
     </div>
   </main>
 </template>
