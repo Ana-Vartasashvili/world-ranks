@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Filterbar from '../components/home/Filterbar.vue'
 import CountriesList from '@/components/home/CountriesList.vue'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
+import Filterbar from '../components/home/Filterbar.vue'
 
 const countriesFields = ['flags', 'name', 'population', 'area', 'region']
 
@@ -21,7 +21,7 @@ onMounted(() => {
   >
     <div class="flex justify-between items-center w-full">
       <span class="text-wr-grey-400 font-semibold opacity-55 text-sm md:text-base"
-        >Found 234 countries</span
+        >Found {{ countries?.length || 0 }} countries</span
       >
 
       <div class="bg-wr-grey-500 w-fit flex p-2 rounded-xl gap-2 md:min-w-72">
