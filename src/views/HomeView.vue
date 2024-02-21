@@ -2,12 +2,13 @@
 import CountriesList from '@/components/home/CountriesList.vue'
 import Filterbar from '@/components/home/Filterbar.vue'
 import Pagination from '@/components/home/Pagination.vue'
+import type { Country } from '@/models/countries'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, type ComputedRef } from 'vue'
 
 const store = useCountriesStore()
-const { countries, isLoading } = storeToRefs(store)
+const { allCountries, filteredCountries, isLoading } = storeToRefs(store)
 
 const countriesFields = ['flags', 'name', 'population', 'area', 'region']
 const currentPage = ref(1)
@@ -17,11 +18,20 @@ onMounted(() => {
   store.fetchCountries(countriesFields)
 })
 
-const paginatedCountries = computed(() => {
+const countries: ComputedRef<Country[]> = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value
   const endIndex = startIndex + pageSize.value
-  return countries.value.slice(startIndex, endIndex)
+  return filteredCountries.value.slice(startIndex, endIndex)
 })
+
+const searchCountry = (event: Event) => {
+  const searchedCountry = (event.target as HTMLInputElement).value
+  currentPage.value = 1
+
+  filteredCountries.value = allCountries.value.filter((country) =>
+    country.name.common.toLowerCase().includes(searchedCountry.toLowerCase())
+  )
+}
 </script>
 
 <template>
@@ -30,7 +40,7 @@ const paginatedCountries = computed(() => {
   >
     <div class="flex justify-between items-center w-full">
       <span class="text-wr-grey-400 font-semibold opacity-55 text-sm md:text-base"
-        >Found {{ countries?.length || 0 }} countries</span
+        >Found {{ filteredCountries?.length || 0 }} countries</span
       >
 
       <div class="bg-wr-grey-500 w-fit flex p-2 rounded-xl gap-2 md:min-w-72">
@@ -39,19 +49,20 @@ const paginatedCountries = computed(() => {
           type="text"
           placeholder="Search"
           class="bg-wr-grey-500 outline-none w-full text-xs"
+          @input="searchCountry"
         />
       </div>
     </div>
 
     <div class="flex gap-8 mt-7">
       <Filterbar />
-      <CountriesList :countries="paginatedCountries" :is-loading="isLoading" />
+      <CountriesList :countries="countries" :is-loading="isLoading" />
     </div>
 
     <Pagination
       v-model:currentPage="currentPage"
       :page-size="pageSize"
-      :total-items="countries.length"
+      :total-items="filteredCountries.length"
     />
   </main>
 </template>

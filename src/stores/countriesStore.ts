@@ -6,7 +6,8 @@ import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
 export const useCountriesStore = defineStore('countries', () => {
-  const countries: Ref<Country[]> = ref([])
+  const allCountries: Ref<Country[]> = ref([])
+  const filteredCountries: Ref<Country[]> = ref([])
   const isLoading: Ref<boolean> = ref(false)
   const error: Ref<string | null> = ref(null)
 
@@ -15,7 +16,8 @@ export const useCountriesStore = defineStore('countries', () => {
 
     try {
       const response = await getAllCountriesWithFilteredFields(fields)
-      countries.value = response.data
+      allCountries.value = response.data
+      filteredCountries.value = response.data
     } catch (error: any) {
       toast(error?.response?.data?.message, {
         theme: 'dark',
@@ -25,5 +27,5 @@ export const useCountriesStore = defineStore('countries', () => {
     }
   }
 
-  return { countries, isLoading, fetchCountries, error }
+  return { allCountries, filteredCountries, isLoading, fetchCountries, error }
 })
