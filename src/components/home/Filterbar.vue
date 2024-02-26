@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
 import type { Region } from 'src/models/filterbar'
+import { reactive } from 'vue'
 
 const regions = reactive([
   { value: 'Americas', isSelected: false },
@@ -13,16 +13,18 @@ const regions = reactive([
 const selectedRegions: Region[] = []
 
 const toggleRegion = (toggledRegion: Region, index: number) => {
-  const toggleRegionIndex = selectedRegions.findIndex((region) => region === toggledRegion)
+  const toggledRegionIndex = selectedRegions.findIndex((region) => region === toggledRegion)
 
-  if (toggleRegionIndex !== -1) {
-    selectedRegions.splice(toggleRegionIndex, 1)
+  if (toggledRegionIndex !== -1) {
+    selectedRegions.splice(toggledRegionIndex, 1)
     regions[index].isSelected = false
   } else {
     selectedRegions.push(toggledRegion)
     regions[index].isSelected = true
   }
 }
+
+const emitSortType = (event: Event) => {}
 </script>
 
 <template>
@@ -33,6 +35,7 @@ const toggleRegion = (toggledRegion: Region, index: number) => {
         name="sortBy"
         id="sortBy"
         class="text-xs bg-wr-grey-600 cursor-pointer border border-wr-grey-300 border-opacity-65 rounded-md py-2 px-3 w-52 focus:outline-none"
+        @input="emitSortType"
       >
         <option value="alphabetical">Alphabetical</option>
         <option value="population" selected>Population</option>

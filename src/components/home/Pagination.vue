@@ -8,21 +8,9 @@ const props = defineProps<{
   pageSize: number
   totalItems: number
 }>()
-
-const totalPages = computed(() => Math.ceil(props.totalItems / props.pageSize))
 const emit = defineEmits(['update:currentPage'])
 
-const previousPage = () => {
-  if (props.currentPage > 1) {
-    emit('update:currentPage', props.currentPage - 1)
-  }
-}
-
-const nextPage = () => {
-  if (props.currentPage < totalPages.value) {
-    emit('update:currentPage', props.currentPage + 1)
-  }
-}
+const totalPages = computed(() => Math.ceil(props.totalItems / props.pageSize))
 
 const goToPage = (pageNumber: number) => {
   emit('update:currentPage', pageNumber)
@@ -35,46 +23,45 @@ const goToPage = (pageNumber: number) => {
       <a
         href="#"
         class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-        @click="previousPage"
+        @click="goToPage(props.currentPage - 1)"
       >
         <span class="sr-only">Previous</span>
         <ChevronLeft />
       </a>
 
-      <template v-if="currentPage > 1">
-        <a
-          href="#"
-          :class="[
-            'relative',
-            'inline-flex',
-            'items-center',
-            'px-4',
-            'py-2',
-            'text-sm',
-            'font-semibold',
-            'text-white',
-            {
-              'bg-indigo-600': 1 === currentPage,
-              'ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50':
-                1 !== currentPage,
-            },
-          ]"
-          @click="goToPage(1)"
-        >
-          1
-        </a>
-        <span
-          v-if="currentPage > 4"
-          class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-        >
-          ...
-        </span>
-      </template>
+      <a
+        href="#"
+        :class="[
+          'relative',
+          'inline-flex',
+          'items-center',
+          'px-4',
+          'py-2',
+          'text-sm',
+          'font-semibold',
+          'text-white',
+          {
+            'bg-indigo-600': 1 === currentPage,
+            'ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50':
+              1 !== currentPage,
+          },
+        ]"
+        @click="goToPage(1)"
+      >
+        1
+      </a>
+      <span
+        v-if="currentPage > 4"
+        class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+      >
+        ...
+      </span>
 
       <template v-for="pageNumber in totalPages">
         <template v-if="pageNumber > currentPage - 3 && pageNumber < currentPage + 3">
           <a
             href="#"
+            v-if="pageNumber !== 1 && pageNumber !== totalPages"
             :key="pageNumber"
             :class="[
               'relative',
@@ -98,40 +85,38 @@ const goToPage = (pageNumber: number) => {
         </template>
       </template>
 
-      <template v-if="currentPage < totalPages">
-        <span
-          v-if="currentPage < totalPages - 3"
-          class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-        >
-          ...
-        </span>
-        <a
-          href="#"
-          :class="[
-            'relative',
-            'inline-flex',
-            'items-center',
-            'px-4',
-            'py-2',
-            'text-sm',
-            'font-semibold',
-            'text-white',
-            {
-              'bg-indigo-600': totalPages === currentPage,
-              'ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50':
-                totalPages !== currentPage,
-            },
-          ]"
-          @click="goToPage(totalPages)"
-        >
-          {{ totalPages }}
-        </a>
-      </template>
+      <span
+        v-if="currentPage < totalPages - 3"
+        class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+      >
+        ...
+      </span>
+      <a
+        href="#"
+        :class="[
+          'relative',
+          'inline-flex',
+          'items-center',
+          'px-4',
+          'py-2',
+          'text-sm',
+          'font-semibold',
+          'text-white',
+          {
+            'bg-indigo-600': totalPages === currentPage,
+            'ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50':
+              totalPages !== currentPage,
+          },
+        ]"
+        @click="goToPage(totalPages)"
+      >
+        {{ totalPages }}
+      </a>
 
       <a
         href="#"
         class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-        @click="nextPage"
+        @click="goToPage(props.currentPage + 1)"
       >
         <span class="sr-only">Next</span>
         <ChevronRight />
