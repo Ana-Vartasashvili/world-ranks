@@ -3,6 +3,7 @@ import CountriesList from '@/components/home/CountriesList.vue'
 import Filterbar from '@/components/home/Filterbar.vue'
 import Pagination from '@/components/home/Pagination.vue'
 import type { Country } from '@/models/countries'
+import { SortByOption } from '@/models/filterbar'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, type ComputedRef } from 'vue'
@@ -32,6 +33,36 @@ const searchCountry = (event: Event) => {
     country.name.common.toLowerCase().includes(searchedCountry.toLowerCase())
   )
 }
+
+const sortCountries = (sortBy: SortByOption) => {
+  if (sortBy === SortByOption.Alphabetical) {
+    sortCountriesAlphabetically()
+  } else if (sortBy === SortByOption.Population) {
+    sortCountriesByPopulation()
+  } else if (sortBy === SortByOption.Area) {
+    sortCountriesByArea()
+  }
+}
+
+const sortCountriesAlphabetically = () => {
+  filteredCountries.value.sort((a, b) => {
+    if (a.name.common < b.name.common) {
+      return -1
+    } else if (a.name.common > b.name.common) {
+      return 1
+    } else {
+      return 0
+    }
+  })
+}
+
+const sortCountriesByPopulation = () => {
+  filteredCountries.value.sort((a, b) => b.population - a.population)
+}
+
+const sortCountriesByArea = () => {
+  filteredCountries.value.sort((a, b) => b.area - a.area)
+}
 </script>
 
 <template>
@@ -55,7 +86,7 @@ const searchCountry = (event: Event) => {
     </div>
 
     <div class="flex gap-8 mt-7">
-      <Filterbar />
+      <Filterbar @sort-by-change="sortCountries" />
       <CountriesList :countries="countries" :is-loading="isLoading" />
     </div>
 

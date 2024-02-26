@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { Region } from 'src/models/filterbar'
+import { SortByOption, type Region } from '@/models/filterbar'
 import { reactive } from 'vue'
+
+const emit = defineEmits(['sortByChange'])
 
 const regions = reactive([
   { value: 'Americas', isSelected: false },
@@ -24,7 +26,12 @@ const toggleRegion = (toggledRegion: Region, index: number) => {
   }
 }
 
-const emitSortType = (event: Event) => {}
+const sortByOption = SortByOption
+
+const emitSortByType = (event: Event) => {
+  const sortBy = +(event.target as HTMLSelectElement).value
+  emit('sortByChange', sortBy)
+}
 </script>
 
 <template>
@@ -35,11 +42,11 @@ const emitSortType = (event: Event) => {}
         name="sortBy"
         id="sortBy"
         class="text-xs bg-wr-grey-600 cursor-pointer border border-wr-grey-300 border-opacity-65 rounded-md py-2 px-3 w-52 focus:outline-none"
-        @input="emitSortType"
+        @input="emitSortByType"
       >
-        <option value="alphabetical">Alphabetical</option>
-        <option value="population" selected>Population</option>
-        <option value="area">Area (km&#178;)</option>
+        <option :value="sortByOption.Alphabetical">Alphabetical</option>
+        <option :value="sortByOption.Population" selected>Population</option>
+        <option :value="sortByOption.Area">Area (km&#178;)</option>
       </select>
     </div>
 

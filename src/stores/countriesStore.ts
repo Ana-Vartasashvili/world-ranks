@@ -18,6 +18,7 @@ export const useCountriesStore = defineStore('countries', () => {
       const response = await getAllCountriesWithFilteredFields(fields)
       allCountries.value = response.data
       filteredCountries.value = response.data
+      filteredCountries.value.sort((a, b) => b.population - a.population)
     } catch (error: any) {
       toast(error?.response?.data?.message, {
         theme: 'dark',

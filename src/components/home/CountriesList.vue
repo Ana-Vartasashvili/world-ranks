@@ -43,10 +43,10 @@ const addCommas = (item: number): string => {
               :alt="country.name.common + ' flag'"
               width="40"
               height="20"
-              class="rounded-sm w-11 h-7"
+              class="rounded-sm w-11 h-7 min-w-11"
             />
           </td>
-          <td class="py-3 pr-3">{{ country.name.common }}</td>
+          <td class="py-3 pr-3 text-nowrap">{{ country.name.common }}</td>
           <td class="py-3 pr-3">{{ addCommas(country.population) }}</td>
           <td class="py-3 pr-3">{{ addCommas(country.area) }}</td>
           <td class="py-3 pr-3">{{ country.region }}</td>

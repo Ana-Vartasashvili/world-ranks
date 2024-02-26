@@ -58,10 +58,11 @@ const goToPage = (pageNumber: number) => {
       </span>
 
       <template v-for="pageNumber in totalPages">
-        <template v-if="pageNumber > currentPage - 3 && pageNumber < currentPage + 3">
+        <template
+          v-if="pageNumber > currentPage - 3 && pageNumber < currentPage + 3 && pageNumber !== 1"
+        >
           <a
             href="#"
-            v-if="pageNumber !== 1 && pageNumber !== totalPages"
             :key="pageNumber"
             :class="[
               'relative',
@@ -85,33 +86,34 @@ const goToPage = (pageNumber: number) => {
         </template>
       </template>
 
-      <span
-        v-if="currentPage < totalPages - 3"
-        class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-      >
-        ...
-      </span>
-      <a
-        href="#"
-        :class="[
-          'relative',
-          'inline-flex',
-          'items-center',
-          'px-4',
-          'py-2',
-          'text-sm',
-          'font-semibold',
-          'text-white',
-          {
-            'bg-indigo-600': totalPages === currentPage,
-            'ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50':
-              totalPages !== currentPage,
-          },
-        ]"
-        @click="goToPage(totalPages)"
-      >
-        {{ totalPages }}
-      </a>
+      <template v-if="totalPages > 1 && currentPage < totalPages - 3 && totalPages > 1">
+        <span
+          class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+        >
+          ...
+        </span>
+        <a
+          href="#"
+          :class="[
+            'relative',
+            'inline-flex',
+            'items-center',
+            'px-4',
+            'py-2',
+            'text-sm',
+            'font-semibold',
+            'text-white',
+            {
+              'bg-indigo-600': totalPages === currentPage,
+              'ring-1 ring-inset ring-gray-300 hover:text-wr-grey-600 hover:bg-gray-50':
+                totalPages !== currentPage,
+            },
+          ]"
+          @click="goToPage(totalPages)"
+        >
+          {{ totalPages }}
+        </a>
+      </template>
 
       <a
         href="#"
