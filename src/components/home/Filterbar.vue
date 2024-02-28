@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { Region } from '@/models/countries'
-import { SortByOption, type RegionOption, CountryStatus } from '@/models/filterbar'
+import {
+  SortByOption,
+  type RegionOption,
+  CountryStatus,
+  type CountryStatusData,
+} from '@/models/filterbar'
 import { ref, type Ref, reactive } from 'vue'
 
-const emit = defineEmits(['sortByChange', 'selectedRegionsChange', 'selectedStatusChange'])
+const props = defineProps<{
+  selectedRegions: Region[]
+  selectedStatus: CountryStatusData
+  sortByOption: SortByOption
+}>()
+const emit = defineEmits(['update:selectedRegions', 'update:sortByOption', 'update:selectedStatus'])
 
 const regions = ref([
   { value: Region.Americas, isSelected: false },
@@ -13,39 +23,34 @@ const regions = ref([
   { value: Region.Europe, isSelected: false },
   { value: Region.Oceania, isSelected: false },
 ])
-const selectedRegions: Ref<RegionOption[]> = ref([])
-const selectedStatus: { [key in CountryStatus]: boolean } = reactive({
-  independent: false,
-  member: false,
-})
 
 const toggleRegion = (toggledRegion: RegionOption, index: number) => {
-  const toggledRegionIndex = selectedRegions.value.findIndex(
-    (region) => region.value === toggledRegion.value
+  const toggledRegionIndex = props.selectedRegions.findIndex(
+    (region) => region === toggledRegion.value
   )
 
   if (toggledRegionIndex !== -1) {
-    selectedRegions.value.splice(toggledRegionIndex, 1)
+    props.selectedRegions.splice(toggledRegionIndex, 1)
     regions.value[index].isSelected = false
   } else {
-    selectedRegions.value.push(toggledRegion)
+    props.selectedRegions.push(toggledRegion.value)
     regions.value[index].isSelected = true
   }
 
-  emit('selectedRegionsChange', selectedRegions)
+  emit('update:selectedRegions', props.selectedRegions)
 }
 
-const emitSortByType = (event: Event) => {
+const updateSortByOption = (event: Event) => {
   const sortBy = +(event.target as HTMLSelectElement).value
 
-  emit('sortByChange', sortBy)
+  emit('update:sortByOption', sortBy)
 }
 
-const emitCountryStatus = (event: Event) => {
+const updateCountryStatus = (event: Event) => {
   const status: CountryStatus = (event.target as HTMLInputElement).value as CountryStatus
-  selectedStatus[status] = !selectedStatus[status]
+  props.selectedStatus[status] = !props.selectedStatus[status]
 
-  emit('selectedStatusChange', selectedStatus)
+  emit('update:selectedStatus', props.selectedStatus)
 }
 </script>
 
@@ -57,7 +62,7 @@ const emitCountryStatus = (event: Event) => {
         name="sortBy"
         id="sortBy"
         class="text-xs bg-wr-grey-600 cursor-pointer border border-wr-grey-300 border-opacity-65 rounded-md py-2 px-3 w-52 focus:outline-none"
-        @input="emitSortByType"
+        @input="updateSortByOption"
       >
         <option :value="SortByOption.Alphabetical">Alphabetical</option>
         <option :value="SortByOption.Population" selected>Population</option>
@@ -90,7 +95,7 @@ const emitCountryStatus = (event: Event) => {
             id="member"
             name="status"
             class="cursor-pointer"
-            @input="emitCountryStatus"
+            @input="updateCountryStatus"
           />
           <label for="member" class="text-xs cursor-pointer">Member of the United Nations</label>
         </div>
@@ -102,7 +107,7 @@ const emitCountryStatus = (event: Event) => {
             name="status"
             id="independent"
             class="cursor-pointer"
-            @input="emitCountryStatus"
+            @input="updateCountryStatus"
           />
           <label for="independent" class="text-xs cursor-pointer">Independent</label>
         </div>

@@ -1,51 +1,73 @@
 <script setup lang="ts">
+import { COUNTRIES_FIELDS } from '@/CONST/countriesFields'
 import CountriesList from '@/components/home/CountriesList.vue'
 import Filterbar from '@/components/home/Filterbar.vue'
 import Pagination from '@/components/home/Pagination.vue'
-import type { Country } from '@/models/countries'
-import { SortByOption, type CountryStatusData, type RegionOption } from '@/models/filterbar'
+import type { Country, Region } from '@/models/countries'
+import { SortByOption, type CountryStatusData } from '@/models/filterbar'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, type ComputedRef, type Ref } from 'vue'
+import { computed, onMounted, reactive, ref, type ComputedRef, type Ref } from 'vue'
 
 const store = useCountriesStore()
-const { allCountries, filteredCountries, isLoading } = storeToRefs(store)
+const { allCountries, isLoading } = storeToRefs(store)
 
-const countriesFields = ['flags', 'name', 'population', 'area', 'region', 'independent', 'unMember']
 const currentPage = ref(1)
 const pageSize = ref(10)
+const searchedCountryName = ref('')
+const sortByOption: Ref<SortByOption> = ref(SortByOption.Population)
+const selectedRegions: Region[] = reactive([])
+const selectedStatus: CountryStatusData = reactive({ independent: false, member: false })
 
 onMounted(() => {
-  store.fetchCountries(countriesFields)
+  store.fetchCountries(COUNTRIES_FIELDS)
 })
 
 const countries: ComputedRef<Country[]> = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value
-  const endIndex = startIndex + pageSize.value
-  return filteredCountries.value.slice(startIndex, endIndex)
-})
-
-const searchCountry = (event: Event) => {
-  const searchedCountry = (event.target as HTMLInputElement).value
+  let filteredCountries: Country[] = reactive(allCountries.value)
   currentPage.value = 1
 
-  filteredCountries.value = allCountries.value.filter((country) =>
-    country.name.common.toLowerCase().includes(searchedCountry.toLowerCase())
+  filteredCountries = getFilteredCountriesBySearchedName(
+    filteredCountries,
+    searchedCountryName.value
+  )
+  filteredCountries = getCountriesFilteredByRegion(selectedRegions, filteredCountries)
+  filteredCountries = getFilteredCountriesBySelectedStatus(selectedStatus, filteredCountries)
+  filteredCountries = getSortedCountries(sortByOption.value, filteredCountries)
+
+  return filteredCountries
+})
+
+const paginatedCountries: ComputedRef<Country[]> = computed(() => {
+  const startIndex = (currentPage.value - 1) * pageSize.value
+  const endIndex = startIndex + pageSize.value
+
+  return countries.value.slice(startIndex, endIndex)
+})
+
+const setSearchedCountryName = (event: Event) => {
+  const searchedCountry = (event.target as HTMLInputElement).value
+  searchedCountryName.value = searchedCountry
+}
+
+const getFilteredCountriesBySearchedName = (countries: Country[], searchedName: string) => {
+  return countries.filter((country) =>
+    country.name.common.toLowerCase().includes(searchedName.toLowerCase())
   )
 }
 
-const sortCountries = (sortBy: SortByOption) => {
+const getSortedCountries = (sortBy: SortByOption, countries: Country[]) => {
   if (sortBy === SortByOption.Alphabetical) {
-    sortCountriesAlphabetically()
+    return sortCountriesAlphabetically(countries)
   } else if (sortBy === SortByOption.Population) {
-    sortCountriesByPopulation()
-  } else if (sortBy === SortByOption.Area) {
-    sortCountriesByArea()
+    return sortCountriesByPopulation(countries)
+  } else {
+    return sortCountriesByArea(countries)
   }
 }
 
-const sortCountriesAlphabetically = () => {
-  filteredCountries.value.sort((a, b) => {
+const sortCountriesAlphabetically = (countries: Country[]) => {
+  return countries.sort((a, b) => {
     if (a.name.common < b.name.common) {
       return -1
     } else if (a.name.common > b.name.common) {
@@ -56,29 +78,32 @@ const sortCountriesAlphabetically = () => {
   })
 }
 
-const sortCountriesByPopulation = () => {
-  filteredCountries.value.sort((a, b) => b.population - a.population)
+const sortCountriesByPopulation = (countries: Country[]) => {
+  return countries.sort((a, b) => b.population - a.population)
 }
 
-const sortCountriesByArea = () => {
-  filteredCountries.value.sort((a, b) => b.area - a.area)
+const sortCountriesByArea = (countries: Country[]) => {
+  return countries.sort((a, b) => b.area - a.area)
 }
 
-const filterCountriesByRegion = (selectedRegions: Ref<RegionOption[]>) => {
-  if (selectedRegions.value.length === 0) {
-    return (filteredCountries.value = allCountries.value)
+const getCountriesFilteredByRegion = (selectedRegions: Region[], countries: Country[]) => {
+  if (selectedRegions.length === 0) {
+    return countries
   }
 
-  filteredCountries.value = allCountries.value.filter((country) => {
-    return selectedRegions.value.some((region) => region.value === country.region)
+  return countries.filter((country) => {
+    return selectedRegions.some((region) => region === country.region)
   })
 }
 
-const filterCountriesBySelectedStatus = ({ independent, member }: CountryStatusData) => {
+const getFilteredCountriesBySelectedStatus = (
+  { independent, member }: CountryStatusData,
+  countries: Country[]
+) => {
   if (!independent && !member) {
-    filteredCountries.value = allCountries.value
+    return countries
   } else {
-    filteredCountries.value = allCountries.value.filter((country) => {
+    return countries.filter((country) => {
       if (independent) return country.independent === independent
       if (member) return country.unMember === member
     })
@@ -92,7 +117,7 @@ const filterCountriesBySelectedStatus = ({ independent, member }: CountryStatusD
   >
     <div class="flex justify-between items-center w-full">
       <span class="text-wr-grey-400 font-semibold opacity-55 text-sm md:text-base"
-        >Found {{ filteredCountries?.length || 0 }} countries</span
+        >Found {{ countries?.length || 0 }} countries</span
       >
 
       <div class="bg-wr-grey-500 w-fit flex p-2 rounded-xl gap-2 md:min-w-72">
@@ -101,24 +126,24 @@ const filterCountriesBySelectedStatus = ({ independent, member }: CountryStatusD
           type="text"
           placeholder="Search"
           class="bg-wr-grey-500 outline-none w-full text-xs"
-          @input="searchCountry"
+          @input="setSearchedCountryName"
         />
       </div>
     </div>
 
     <div class="flex gap-8 mt-7">
       <Filterbar
-        @sort-by-change="sortCountries"
-        @selected-regions-change="filterCountriesByRegion"
-        @selected-status-change="filterCountriesBySelectedStatus"
+        v-model:selectedRegions="selectedRegions"
+        v-model:selectedStatus="selectedStatus"
+        v-model:sortByOption="sortByOption"
       />
-      <CountriesList :countries="countries" :is-loading="isLoading" />
+      <CountriesList :countries="paginatedCountries" :is-loading="isLoading" />
     </div>
 
     <Pagination
       v-model:currentPage="currentPage"
       :page-size="pageSize"
-      :total-items="filteredCountries.length"
+      :total-items="countries.length"
     />
   </main>
 </template>
