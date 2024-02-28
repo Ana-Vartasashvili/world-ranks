@@ -21,6 +21,8 @@ export interface Country {
   region: Region
   area: number
   population: number
+  unMember: boolean
+  independent: boolean
 }
 
 export enum Region {

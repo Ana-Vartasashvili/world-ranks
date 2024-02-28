@@ -3,15 +3,15 @@ import CountriesList from '@/components/home/CountriesList.vue'
 import Filterbar from '@/components/home/Filterbar.vue'
 import Pagination from '@/components/home/Pagination.vue'
 import type { Country } from '@/models/countries'
-import { SortByOption } from '@/models/filterbar'
+import { SortByOption, type CountryStatusData, type RegionOption } from '@/models/filterbar'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, type ComputedRef } from 'vue'
+import { computed, onMounted, ref, type ComputedRef, type Ref } from 'vue'
 
 const store = useCountriesStore()
 const { allCountries, filteredCountries, isLoading } = storeToRefs(store)
 
-const countriesFields = ['flags', 'name', 'population', 'area', 'region']
+const countriesFields = ['flags', 'name', 'population', 'area', 'region', 'independent', 'unMember']
 const currentPage = ref(1)
 const pageSize = ref(10)
 
@@ -63,6 +63,27 @@ const sortCountriesByPopulation = () => {
 const sortCountriesByArea = () => {
   filteredCountries.value.sort((a, b) => b.area - a.area)
 }
+
+const filterCountriesByRegion = (selectedRegions: Ref<RegionOption[]>) => {
+  if (selectedRegions.value.length === 0) {
+    return (filteredCountries.value = allCountries.value)
+  }
+
+  filteredCountries.value = allCountries.value.filter((country) => {
+    return selectedRegions.value.some((region) => region.value === country.region)
+  })
+}
+
+const filterCountriesBySelectedStatus = ({ independent, member }: CountryStatusData) => {
+  if (!independent && !member) {
+    filteredCountries.value = allCountries.value
+  } else {
+    filteredCountries.value = allCountries.value.filter((country) => {
+      if (independent) return country.independent === independent
+      if (member) return country.unMember === member
+    })
+  }
+}
 </script>
 
 <template>
@@ -86,7 +107,11 @@ const sortCountriesByArea = () => {
     </div>
 
     <div class="flex gap-8 mt-7">
-      <Filterbar @sort-by-change="sortCountries" />
+      <Filterbar
+        @sort-by-change="sortCountries"
+        @selected-regions-change="filterCountriesByRegion"
+        @selected-status-change="filterCountriesBySelectedStatus"
+      />
       <CountriesList :countries="countries" :is-loading="isLoading" />
     </div>
 

@@ -1,36 +1,51 @@
 <script setup lang="ts">
-import { SortByOption, type Region } from '@/models/filterbar'
-import { reactive } from 'vue'
+import { Region } from '@/models/countries'
+import { SortByOption, type RegionOption, CountryStatus } from '@/models/filterbar'
+import { ref, type Ref, reactive } from 'vue'
 
-const emit = defineEmits(['sortByChange'])
+const emit = defineEmits(['sortByChange', 'selectedRegionsChange', 'selectedStatusChange'])
 
-const regions = reactive([
-  { value: 'Americas', isSelected: false },
-  { value: 'Antarctic', isSelected: false },
-  { value: 'Africa', isSelected: false },
-  { value: 'Asia', isSelected: false },
-  { value: 'Europe', isSelected: false },
-  { value: 'Oceania', isSelected: false },
+const regions = ref([
+  { value: Region.Americas, isSelected: false },
+  { value: Region.Antarctic, isSelected: false },
+  { value: Region.Africa, isSelected: false },
+  { value: Region.Asia, isSelected: false },
+  { value: Region.Europe, isSelected: false },
+  { value: Region.Oceania, isSelected: false },
 ])
-const selectedRegions: Region[] = []
+const selectedRegions: Ref<RegionOption[]> = ref([])
+const selectedStatus: { [key in CountryStatus]: boolean } = reactive({
+  independent: false,
+  member: false,
+})
 
-const toggleRegion = (toggledRegion: Region, index: number) => {
-  const toggledRegionIndex = selectedRegions.findIndex((region) => region === toggledRegion)
+const toggleRegion = (toggledRegion: RegionOption, index: number) => {
+  const toggledRegionIndex = selectedRegions.value.findIndex(
+    (region) => region.value === toggledRegion.value
+  )
 
   if (toggledRegionIndex !== -1) {
-    selectedRegions.splice(toggledRegionIndex, 1)
-    regions[index].isSelected = false
+    selectedRegions.value.splice(toggledRegionIndex, 1)
+    regions.value[index].isSelected = false
   } else {
-    selectedRegions.push(toggledRegion)
-    regions[index].isSelected = true
+    selectedRegions.value.push(toggledRegion)
+    regions.value[index].isSelected = true
   }
-}
 
-const sortByOption = SortByOption
+  emit('selectedRegionsChange', selectedRegions)
+}
 
 const emitSortByType = (event: Event) => {
   const sortBy = +(event.target as HTMLSelectElement).value
+
   emit('sortByChange', sortBy)
+}
+
+const emitCountryStatus = (event: Event) => {
+  const status: CountryStatus = (event.target as HTMLInputElement).value as CountryStatus
+  selectedStatus[status] = !selectedStatus[status]
+
+  emit('selectedStatusChange', selectedStatus)
 }
 </script>
 
@@ -44,9 +59,9 @@ const emitSortByType = (event: Event) => {
         class="text-xs bg-wr-grey-600 cursor-pointer border border-wr-grey-300 border-opacity-65 rounded-md py-2 px-3 w-52 focus:outline-none"
         @input="emitSortByType"
       >
-        <option :value="sortByOption.Alphabetical">Alphabetical</option>
-        <option :value="sortByOption.Population" selected>Population</option>
-        <option :value="sortByOption.Area">Area (km&#178;)</option>
+        <option :value="SortByOption.Alphabetical">Alphabetical</option>
+        <option :value="SortByOption.Population" selected>Population</option>
+        <option :value="SortByOption.Area">Area (km&#178;)</option>
       </select>
     </div>
 
@@ -69,17 +84,25 @@ const emitSortByType = (event: Event) => {
       <label for="region" class="text-xxs text-wr-grey-400 opacity-85">Status</label>
       <div class="flex flex-col justify-start gap-2">
         <div class="flex gap-2">
-          <input type="checkbox" value="member" id="member" name="status" class="cursor-pointer" />
+          <input
+            type="checkbox"
+            :value="CountryStatus.Member"
+            id="member"
+            name="status"
+            class="cursor-pointer"
+            @input="emitCountryStatus"
+          />
           <label for="member" class="text-xs cursor-pointer">Member of the United Nations</label>
         </div>
 
         <div class="flex gap-2">
           <input
             type="checkbox"
-            value="independent"
+            :value="CountryStatus.Independent"
             name="status"
             id="independent"
             class="cursor-pointer"
+            @input="emitCountryStatus"
           />
           <label for="independent" class="text-xs cursor-pointer">Independent</label>
         </div>
