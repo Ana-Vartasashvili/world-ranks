@@ -23,6 +23,11 @@ export interface Country {
   population: number
   unMember: boolean
   independent: boolean
+  continents: string[]
+  capital: string[]
+  languages: { [key: string]: string }
+  currencies: { [key: string]: string }
+  subRegion: string
 }
 
 export enum Region {

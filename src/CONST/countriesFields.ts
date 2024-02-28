@@ -6,4 +6,9 @@ export const COUNTRIES_FIELDS = [
   'region',
   'independent',
   'unMember',
+  'continents',
+  'capital',
+  'languages',
+  'currencies',
+  'subRegion',
 ]

@@ -18,7 +18,7 @@ export const useCountriesStore = defineStore('countries', () => {
       allCountries.value = response.data
       allCountries.value.sort((a, b) => b.population - a.population)
     } catch (error: any) {
-      toast(error?.response?.data?.message, {
+      toast(error?.response?.data?.message || 'Something went wrong', {
         theme: 'dark',
       })
     } finally {
