@@ -1,4 +1,4 @@
-export const COUNTRIES_FIELDS = [
+export const COUNTRY_FIELDS = [
   'flags',
   'name',
   'population',
@@ -10,5 +10,5 @@ export const COUNTRIES_FIELDS = [
   'capital',
   'languages',
   'currencies',
-  'subRegion',
+  'subregion',
 ]

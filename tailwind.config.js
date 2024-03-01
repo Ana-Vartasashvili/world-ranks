@@ -17,6 +17,7 @@ export default {
         'vietnam-pro': ['Be Vietnam Pro', 'sans-serif'],
       },
       maxWidth: {
+        200: '800px',
         300: '1200px',
       },
     },

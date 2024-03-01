@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { COUNTRIES_FIELDS } from '@/CONST/countriesFields'
+import { COUNTRY_FIELDS } from '@/CONST/countryFields'
 import CountriesList from '@/components/home/CountriesList.vue'
 import Filterbar from '@/components/home/Filterbar.vue'
 import Pagination from '@/components/home/Pagination.vue'
@@ -20,7 +20,7 @@ const selectedRegions: Region[] = reactive([])
 const selectedStatus: CountryStatusData = reactive({ independent: false, member: false })
 
 onMounted(() => {
-  store.fetchCountries(COUNTRIES_FIELDS)
+  store.fetchCountries(COUNTRY_FIELDS)
 })
 
 const countries: ComputedRef<Country[]> = computed(() => {
@@ -147,3 +147,4 @@ const getFilteredCountriesBySelectedStatus = (
     />
   </main>
 </template>
+@/CONST/countryFields

@@ -26,8 +26,8 @@ export interface Country {
   continents: string[]
   capital: string[]
   languages: { [key: string]: string }
-  currencies: { [key: string]: string }
-  subRegion: string
+  currencies: { name: string; symbol: string }
+  subregion: string
 }
 
 export enum Region {

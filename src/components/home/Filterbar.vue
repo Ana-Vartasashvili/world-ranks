@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Region } from '@/models/countries'
 import {
-  SortByOption,
-  type RegionOption,
   CountryStatus,
+  SortByOption,
   type CountryStatusData,
+  type RegionOption,
 } from '@/models/filterbar'
-import { ref, type Ref, reactive } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps<{
   selectedRegions: Region[]

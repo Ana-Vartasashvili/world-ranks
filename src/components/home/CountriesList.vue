@@ -1,25 +1,9 @@
 <script setup lang="ts">
 import type { Country } from '@/models/countries'
 import CountriesListItemPlaceholder from './CountriesListItemPlaceholder.vue'
+import { addCommasInsideNumber } from '@/utils/formatNumber'
 
 const props = defineProps<{ countries: Country[]; isLoading: boolean }>()
-const addCommas = (item: number): string => {
-  const numStr: string = item.toString()
-  let result: string = ''
-  let count: number = 0
-
-  if (numStr.startsWith('0')) return numStr
-
-  for (let i = numStr.length - 1; i >= 0; i--) {
-    result = numStr[i] + result
-    count++
-    if (count % 3 === 0 && i !== 0) {
-      result = ',' + result
-    }
-  }
-
-  return result
-}
 </script>
 
 <template>
@@ -47,8 +31,8 @@ const addCommas = (item: number): string => {
             />
           </td>
           <td class="py-3 pr-3 text-nowrap">{{ country.name.common }}</td>
-          <td class="py-3 pr-3">{{ addCommas(country.population) }}</td>
-          <td class="py-3 pr-3">{{ addCommas(country.area) }}</td>
+          <td class="py-3 pr-3">{{ addCommasInsideNumber(country.population, 3) }}</td>
+          <td class="py-3 pr-3">{{ addCommasInsideNumber(country.area, 3) }}</td>
           <td class="py-3 pr-3">{{ country.region }}</td>
         </tr>
 
