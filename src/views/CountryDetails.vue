@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { COUNTRY_FIELDS } from '@/CONST/countryFields'
+import { COUNTRY_FIELDS } from '@/config/countryFields'
 import type { Country } from '@/models/countries'
 import { useCountriesStore } from '@/stores/countriesStore'
 import { addCommasInsideNumber } from '@/utils/formatNumber'
@@ -14,7 +14,7 @@ const { allCountries, currentCountry, isLoading } = storeToRefs(store)
 onMounted(() => {
   if (allCountries.value.length > 0) {
     currentCountry.value = allCountries.value.find(
-      (country) => country.name.common === 'greece'
+      (country) => country.name.common === props.name
     ) as Country
   } else {
     store.fetchCountry(props.name, COUNTRY_FIELDS)
@@ -49,7 +49,7 @@ const getCurrenciesString = (currencies: Country['currencies']) => {
       :src="currentCountry?.flags?.png"
       :alt="(currentCountry?.name?.common || '') + ' flag'"
       width="250"
-      class="mx-auto w-64 -mt-20 rounded-lg"
+      class="mx-auto w-64 -mt-20 rounded-lg h-40 object-cover object-center"
     />
 
     <p class="text-center mt-7 text-3xl font-semibold">
@@ -101,3 +101,4 @@ const getCurrenciesString = (currencies: Country['currencies']) => {
     </ul>
   </main>
 </template>
+@/config/countryFields

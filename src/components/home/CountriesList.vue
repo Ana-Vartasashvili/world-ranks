@@ -1,9 +1,16 @@
+t
 <script setup lang="ts">
 import type { Country } from '@/models/countries'
-import CountriesListItemPlaceholder from './CountriesListItemPlaceholder.vue'
 import { addCommasInsideNumber } from '@/utils/formatNumber'
+import { useRouter } from 'vue-router'
+import CountriesListItemPlaceholder from './CountriesListItemPlaceholder.vue'
 
 const props = defineProps<{ countries: Country[]; isLoading: boolean }>()
+const router = useRouter()
+
+const navigateToCountryDetails = (countryName: string) => {
+  router.push({ name: 'country', params: { name: countryName } })
+}
 </script>
 
 <template>
@@ -20,7 +27,12 @@ const props = defineProps<{ countries: Country[]; isLoading: boolean }>()
       </thead>
 
       <tbody>
-        <tr v-for="country in props.countries" :key="country.name.official">
+        <tr
+          v-for="country in props.countries"
+          :key="country.name.official"
+          @click="navigateToCountryDetails(country.name.common)"
+          class="cursor-pointer"
+        >
           <td class="py-3 pr-3">
             <img
               :src="country?.flags?.png"
@@ -40,7 +52,7 @@ const props = defineProps<{ countries: Country[]; isLoading: boolean }>()
           <CountriesListItemPlaceholder v-for="item in 10" />
         </template>
 
-        <div v-if="!isLoading && countries.length === 0" class="mt-2">No countries found</div>
+        <div v-if="!props.isLoading && countries.length === 0" class="mt-2">No countries found</div>
       </tbody>
     </table>
   </div>

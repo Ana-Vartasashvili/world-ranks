@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { COUNTRY_FIELDS } from '@/CONST/countryFields'
+import { COUNTRY_FIELDS } from '@/config/countryFields'
 import CountriesList from '@/components/home/CountriesList.vue'
 import Filterbar from '@/components/home/Filterbar.vue'
 import Pagination from '@/components/home/Pagination.vue'
@@ -147,4 +147,4 @@ const getFilteredCountriesBySelectedStatus = (
     />
   </main>
 </template>
-@/CONST/countryFields
+@/CONST/countryFields @/config/countryFields

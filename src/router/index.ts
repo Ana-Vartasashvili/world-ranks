@@ -17,6 +17,13 @@ const router = createRouter({
       component: CountryDetails,
     },
   ],
+  scrollBehavior(_to, _from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  },
 })
 
 export default router
